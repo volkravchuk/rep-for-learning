@@ -1,19 +1,12 @@
 #Basic Calculator
 
-class Calculator:
+class Calculate:
+    def __init__(self, first_number: int, operator: str, second_number: int):
+        self.first_number = first_number
+        self.operator = operator
+        self.second_number = second_number
+        self.result: int = eval(f"{self.first_number} {self.operator} {self.second_number}")
 
-    def add(num1, num2):
-        """Add Function"""
-        return num1 + num2
+calc_instance = Calculate(2, "/", 3)
 
-    def substract(num1, num2):
-        """Substract Function"""
-        return num1 - num2
-
-    def multiply(num1, num2):
-        """Multiply Function"""
-        return num1 * num2
-
-    def divide(num1, num2):
-        """Divide Function"""
-        return num1 / num2
+print (calc_instance.result)
