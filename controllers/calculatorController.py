@@ -1,11 +1,26 @@
-from flask import render_template 
+from flask import request, jsonify
 from application import app
+from models.model import db, History
+from utilities.calculator import Calculate
 
-@app.route('/')
-def index():
-    return render_template('index.html')
 
-# @app.route('/calculate')
-# def calculate():
-#     calc_instance = Calculate(2, "/", 3)
-#     return render_template('index.html', calc_instance = calc_instance)
+@app.route('/calculate', methods=['POST'])
+def calculate():
+    data = request.get_json()
+    first_number = int(data['firstNumber'])
+    operator = str(data['operator'])
+    second_number = int(data['secondNumber'])
+    
+    calc_instance = Calculate(first_number, operator, second_number)
+
+    history_entry = History(
+        first_number = first_number,
+        operator = operator,
+        second_number = second_number,
+        result = calc_instance.result
+        )
+
+    db.session.add(history_entry)
+    db.session.commit()
+
+    return jsonify({'result': calc_instance.result})

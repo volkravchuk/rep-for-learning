@@ -77,7 +77,84 @@
             <button>3</button>
             <button>0</button>
             <button>.</button>
+            <br><button id="history">H</button>
         </div>
     </div>
+    <script>
+        const resultField = document.getElementById('result');
+        let currentInput = '';
+
+        document.querySelectorAll('.buttons button').forEach(button => {
+            button.addEventListener('click', () => {
+                const value = button.textContent;
+
+                if (value === 'C') {
+                    currentInput = '';
+                } else if (value === '=') {
+
+                    const parts = currentInput.match(/(\d+)([*+\-])(\d+)/);
+                    if (parts) {
+                        const firstNumber = parts[1];
+                        const operator = parts[2];
+                        const secondNumber = parts[3];
+
+                        fetch('/calculate', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({firstNumber, operator, secondNumber})
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            currentInput = data.result;
+                            resultField.value = data.result;
+                        })
+                        .catch(error => console.error('Error:', error));
+                    }
+                } else {
+                    currentInput += value;
+                }
+
+                resultField.value = currentInput;
+            });
+        });
+
+        document.getElementById('history').addEventListener('click', () => {
+        currentInput = ''
+        fetch('/history')
+            .then(response => response.json())
+            .then(data => {
+                // Create a modal or a new div to display the history
+                const historyContainer = document.createElement('div');
+                historyContainer.style.position = 'fixed';
+                historyContainer.style.top = '50%';
+                historyContainer.style.left = '50%';
+                historyContainer.style.transform = 'translate(-50%, -50%)';
+                historyContainer.style.backgroundColor = 'white';
+                historyContainer.style.padding = '20px';
+                historyContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+                historyContainer.innerHTML = '<h2>Calculation History</h2><ul></ul>';
+
+                const list = historyContainer.querySelector('ul');
+                data.reverse().forEach(entry => {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${entry.first_number} ${entry.operator} ${entry.second_number} = ${entry.result} (calculated on ${entry.calculated})`;
+                    list.appendChild(listItem);
+                });
+
+                document.body.appendChild(historyContainer);
+
+                const closeButton = document.createElement('button');
+                closeButton.textContent = 'Close';
+                closeButton.addEventListener('click', () => {
+                    document.body.removeChild(historyContainer);
+                });
+                historyContainer.appendChild(closeButton);
+            })
+            .catch(error => console.error('Error fetching history:', error));
+        resultField.value = currentInput;
+        })
+    </script>
 </body>
 </html>
