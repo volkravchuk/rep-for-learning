@@ -9,6 +9,7 @@ def get_history():
     
     for entry in history_entries:
         history_list.append({
+            'id': entry.id,
             'first_number': entry.first_number,
             'operator': entry.operator,
             'second_number': entry.second_number,

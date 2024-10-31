@@ -54,6 +54,18 @@
             grid-row: span 2;
             background-color: #ffcc00;
         }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .delete-button {
+            background: none;
+            border: none;
+            color: red;
+            cursor: pointer;
+            font-size: 1.5rem;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +103,6 @@
                 if (value === 'C') {
                     currentInput = '';
                 } else if (value === '=') {
-
                     const parts = currentInput.match(/(\d+)([*+\-])(\d+)/);
                     if (parts) {
                         const firstNumber = parts[1];
@@ -121,40 +132,62 @@
         });
 
         document.getElementById('history').addEventListener('click', () => {
-        currentInput = ''
-        fetch('/history')
-            .then(response => response.json())
-            .then(data => {
-                // Create a modal or a new div to display the history
-                const historyContainer = document.createElement('div');
-                historyContainer.style.position = 'fixed';
-                historyContainer.style.top = '50%';
-                historyContainer.style.left = '50%';
-                historyContainer.style.transform = 'translate(-50%, -50%)';
-                historyContainer.style.backgroundColor = 'white';
-                historyContainer.style.padding = '20px';
-                historyContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
-                historyContainer.innerHTML = '<h2>Calculation History</h2><ul></ul>';
+            currentInput = '';
+            fetch('/history')
+                .then(response => response.json())
+                .then(data => {
+                    // Create a modal or a new div to display the history
+                    const historyContainer = document.createElement('div');
+                    historyContainer.style.position = 'fixed';
+                    historyContainer.style.top = '50%';
+                    historyContainer.style.left = '50%';
+                    historyContainer.style.transform = 'translate(-50%, -50%)';
+                    historyContainer.style.backgroundColor = 'white';
+                    historyContainer.style.padding = '20px';
+                    historyContainer.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.5)';
+                    historyContainer.innerHTML = '<h2>Calculation History</h2><ul></ul>';
 
-                const list = historyContainer.querySelector('ul');
-                data.reverse().forEach(entry => {
-                    const listItem = document.createElement('li');
-                    listItem.textContent = `${entry.first_number} ${entry.operator} ${entry.second_number} = ${entry.result} (calculated on ${entry.calculated})`;
-                    list.appendChild(listItem);
-                });
+                    const list = historyContainer.querySelector('ul');
+                    data.reverse().forEach(entry => {
+                        const listItem = document.createElement('li');
+                        listItem.className = 'history-item'; // Add class for styling
 
-                document.body.appendChild(historyContainer);
+                        // Create a delete button
+                        const deleteButton = document.createElement('button');
+                        deleteButton.textContent = '✖'; // Cross icon
+                        deleteButton.className = 'delete-button'; // Add class for styling
+                        deleteButton.onclick = () => {
+                            // Send a delete request
+                            fetch(`/delete/${entry.id}`, {
+                                method: 'DELETE'
+                            })
+                            .then(response => {
+                                if (response.ok) {
+                                    // Remove the item from the list if delete was successful
+                                    list.removeChild(listItem);
+                                } else {
+                                    console.error('Error deleting history entry:', response.status);
+                                }
+                            });
+                        };
 
-                const closeButton = document.createElement('button');
-                closeButton.textContent = 'Close';
-                closeButton.addEventListener('click', () => {
-                    document.body.removeChild(historyContainer);
-                });
-                historyContainer.appendChild(closeButton);
-            })
-            .catch(error => console.error('Error fetching history:', error));
-        resultField.value = currentInput;
-        })
+                        listItem.textContent = `${entry.first_number} ${entry.operator} ${entry.second_number} = ${entry.result} (calculated on ${entry.calculated})`;
+                        listItem.appendChild(deleteButton); // Append delete button to the list item
+                        list.appendChild(listItem);
+                    });
+
+                    document.body.appendChild(historyContainer);
+
+                    const closeButton = document.createElement('button');
+                    closeButton.textContent = 'Close';
+                    closeButton.addEventListener('click', () => {
+                        document.body.removeChild(historyContainer);
+                    });
+                    historyContainer.appendChild(closeButton);
+                })
+                .catch(error => console.error('Error fetching history:', error));
+            resultField.value = currentInput;
+        });
     </script>
 </body>
 </html>

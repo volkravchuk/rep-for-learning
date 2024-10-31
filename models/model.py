@@ -11,7 +11,7 @@ class History(db.Model):
     operator = db.Column(db.String, nullable = False)
     second_number = db.Column(db.Integer, nullable = False)
     result = db.Column(db.Integer, nullable = False)
-    calculated = db.Column(db.DateTime, default = datetime.now(timezone.utc))
+    calculated = db.Column(db.DateTime, default = lambda: datetime.now(timezone.utc))
 
     def __repr__(self):
         return f"<{self.first_number}>"
