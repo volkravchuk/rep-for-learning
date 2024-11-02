@@ -103,7 +103,7 @@
                 if (value === 'C') {
                     currentInput = '';
                 } else if (value === '=') {
-                    const parts = currentInput.match(/(\d+)([*+\-])(\d+)/);
+                    const parts = currentInput.match(/(\d+)([/*+\-])(\d+)/);
                     if (parts) {
                         const firstNumber = parts[1];
                         const operator = parts[2];

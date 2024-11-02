@@ -20,7 +20,6 @@ def calculate():
         result = calc_instance.result
         )
 
-    db.session.add(history_entry)
-    db.session.commit()
+    history_entry.save()
 
     return jsonify({'result': calc_instance.result})
