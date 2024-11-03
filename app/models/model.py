@@ -7,8 +7,8 @@ app.config['MONGODB_SETTINGS'] = {
     'db': 'history',
     'host': 'localhost',
     'port': 27017,
-    'username': os.environ.get('MONGO_USERNAME'),
-    'password': os.environ.get('MONGO_PASSWORD'),
+    'username': 'root',
+    'password': 'rootpass',
     'authentication_source': 'admin'
 }
 
@@ -22,4 +22,4 @@ class History(db.Document):
     calculated = db.DateTimeField(default=lambda: datetime.now(timezone.utc))
 
     def __repr__(self):
-        return f"<History {self.first_number} {self.operator} {self.second_number} = {self.result}>"
+        return f"<{self.first_number} {self.operator} {self.second_number} = {self.result}>"
