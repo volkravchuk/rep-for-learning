@@ -1,7 +1,6 @@
 from flask_mongoengine import MongoEngine
 from application import app
 from datetime import datetime, timezone
-import os
 
 app.config['MONGODB_SETTINGS'] = {
     'db': 'history',
