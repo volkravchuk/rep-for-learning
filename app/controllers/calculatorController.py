@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from application import app
-from models.model import db, History
+from models.model import History
 
 
 @app.route('/calculate', methods=['POST'])
