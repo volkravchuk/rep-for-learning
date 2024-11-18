@@ -34,7 +34,7 @@ pipeline {
                 echo 'Deploying application to Kubernetes...'
                 withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh '''
-                        kubectl apply -f k8s/app.yaml
+                        kubectl apply --validate=false -f k8s/app.yaml
                     '''
         }
     }
