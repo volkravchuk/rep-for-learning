@@ -10,5 +10,11 @@ RUN apt update && \
     chmod +x kubectl && \
     mv kubectl /usr/local/bin/
 
+# Install Docker
+RUN apt update && \
+    apt install -y docker.io && \
+    groupmod -g 989 docker || groupadd -g 989 docker && \
+    usermod -aG docker jenkins
+
 # Restore Jenkins user
 USER jenkins

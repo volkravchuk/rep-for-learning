@@ -32,10 +32,12 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying application to Kubernetes...'
-                sh '''
-                    kubectl apply -f k8s/app.yaml
-                '''
-            }
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
+                    sh '''
+                        kubectl apply -f k8s/app.yaml
+                    '''
+        }
+    }
         }
     }
 
